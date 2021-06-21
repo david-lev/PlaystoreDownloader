@@ -1,3 +1,15 @@
+**This code has been forked from https://github.com/ClaudiuGeorgiu/PlaystoreDownloader and has undergone a number of changes in order to work around the authentication issue that prevents the authentication token from being exported automatically.**
+
+The fault due to which I had to remove the automatic authentication is shown when trying to download an application, by the following message: ``Login failed, please check your credentials.``
+
+**Changes made:** removed the functions that perform the export of the `auth_token` and that info must be insert manually instead of the email and password in the [credentials.json](/credentials.json) file.
+- How do I get the auth_token? Currently, I know a number of methods but the most reliable, is to use a tool called [DummyDroid](/dummydroid-2.2.jar), this tool allows registration of GSF_ID as well as getting a `auth_token`. The only problem? Use of the tool is paid :( I hope that in the near future I will be able to understand why the authentication process failed and enable automatic authentication.
+
+----------------------------------------------------------------------------------------
+
+
+
+
 # PlaystoreDownloader
 
 > A command line tool to download Android applications directly from the Google
@@ -144,12 +156,9 @@ and an **ANDROID ID** associated to your account. Please modify the
 [credentials.json](https://github.com/ClaudiuGeorgiu/PlaystoreDownloader/blob/master/credentials.json)
 file and insert the required information before trying to use this tool:
 
-* Enter your Google email and password in the `USERNAME` and `PASSWORD` fields of the
-[credentials.json](https://github.com/ClaudiuGeorgiu/PlaystoreDownloader/blob/master/credentials.json)
-file. This information is needed to authenticate with Google's servers. In case you have
-2-Step Verification activated, you will need to generate an
-[App Password](https://support.google.com/accounts/answer/185833)
-for the `PASSWORD` field.
+Enter your ``auth_token`` fields of the
+[credentials.json](/credentials.json)
+file. This information is needed to authenticate with Google's servers.
 
 * Use the above credentials on an Android device (real or emulated) and download at
 least one application using the official Google Play Store on the device. This step is
@@ -160,7 +169,7 @@ Do not remove the account from the device or its **ANDROID ID** won't be valid a
 * Get the
 [**ANDROID ID**](https://developer.android.com/reference/android/provider/Settings.Secure#ANDROID_ID)
 of the device and fill the `ANDROID_ID` field of the
-[credentials.json](https://github.com/ClaudiuGeorgiu/PlaystoreDownloader/blob/master/credentials.json)
+[credentials.json](/credentials.json)
 file. You can obtain the **ANDROID ID** by installing the
 [Device ID](https://play.google.com/store/apps/details?id=com.evozi.deviceid)
 application on your device, then copy the string corresponding to
@@ -235,7 +244,7 @@ If the download is successful, the resulting `.apk` file will be saved in the
 `PlaystoreDownloader/Downloads/` directory. You can change the name and the location
 of the downloaded `.apk` file by providing an additional `-o "path/to/downloaded.apk"`
 argument to
-[download.py](https://github.com/ClaudiuGeorgiu/PlaystoreDownloader/blob/master/download.py)
+[download.py](/download.py)
 (type `$ pipenv run python download.py --help` or check the
 [available parameters](#available-parameters) for more information).
 
