@@ -14,7 +14,7 @@ from google.protobuf import json_format
 from requests.exceptions import ChunkedEncodingError
 
 from playstore import playstore_proto_pb2 as playstore_protobuf
-from playstore.credentials import EncryptedCredentials
+# from playstore.credentials import EncryptedCredentials
 from playstore.util import Util
 
 # Detect Python version and set the SSL ciphers accordingly. This is needed to avoid
@@ -51,7 +51,6 @@ else:
 
 
 class Playstore(object):
-
     LOGIN_URL = "https://android.clients.google.com/auth"
 
     def __init__(self, config_file: str = "credentials.json"):
@@ -71,12 +70,11 @@ class Playstore(object):
             self._load_configuration(config_file)
 
             self.android_id: str = self.configuration["ANDROID_ID"]
-
-            self.email: str = self.configuration["USERNAME"]
-            self.encrypted_password: bytes = EncryptedCredentials(
-                self.configuration["USERNAME"], self.configuration["PASSWORD"]
-            ).get_encrypted_credentials()
-
+            self.auth_token: str = self.configuration["AUTH_TOKEN"]
+            # self.email: str = self.configuration["USERNAME"]
+            # self.encrypted_password: bytes = EncryptedCredentials(
+            #     self.configuration["USERNAME"], self.configuration["PASSWORD"]
+            # ).get_encrypted_credentials()
             self.lang_code: str = self.configuration["LANG_CODE"]
             self.lang: str = self.configuration["LANG"]
 
@@ -88,7 +86,7 @@ class Playstore(object):
             self.logger.critical(f"The configuration file is missing the {ex} field")
             raise
 
-        self._login()
+        # self._login()
 
     ##############################
     # Playstore Internal Methods #
@@ -113,39 +111,39 @@ class Playstore(object):
         with open(config_file, "r") as file:
             self.configuration = json.loads(file.read())[0]
 
-    @Util.retry(exception=RuntimeError)
-    def _login(self) -> None:
-        """
-        Perform the login into the Play Store.
-
-        This is needed to obtain the auth token to be used for any further requests.
-        """
-
-        params = {
-            "Email": self.email,
-            "EncryptedPasswd": self.encrypted_password,
-            "service": "androidmarket",
-            "accountType": "HOSTED_OR_GOOGLE",
-            "has_permission": 1,
-            "source": "android",
-            "device_country": self.lang,
-            "lang": self.lang,
-        }
-
-        response = requests.post(self.LOGIN_URL, data=params, verify=True)
-
-        res = {}
-
-        for line in response.text.split():
-            if "=" in line:
-                tokens = line.split("=", 1)
-                res[tokens[0].strip().lower()] = tokens[1].strip()
-
-        if "auth" in res:
-            self.logger.debug(f"Authentication token found: {res['auth']}")
-            self.auth_token = res["auth"]
-        else:
-            raise RuntimeError("Login failed, please check your credentials")
+    # @Util.retry(exception=RuntimeError)
+    # def _login(self) -> None:
+    #     """
+    #     Perform the login into the Play Store.
+    #
+    #     This is needed to obtain the auth token to be used for any further requests.
+    #     """
+    #
+    #     params = {
+    #         "Email": self.email,
+    #         "EncryptedPasswd": self.encrypted_password,
+    #         "service": "androidmarket",
+    #         "accountType": "HOSTED_OR_GOOGLE",
+    #         "has_permission": 1,
+    #         "source": "android",
+    #         "device_country": self.lang,
+    #         "lang": self.lang,
+    #     }
+    #
+    #     response = requests.post(self.LOGIN_URL, data=params, verify=True)
+    #
+    #     res = {}
+    #
+    #     for line in response.text.split():
+    #         if "=" in line:
+    #             tokens = line.split("=", 1)
+    #             res[tokens[0].strip().lower()] = tokens[1].strip()
+    #
+    #     if "auth" in res:
+    #         self.logger.debug(f"Authentication token found: {res['auth']}")
+    #         self.auth_token = res["auth"]
+    #     else:
+    #         raise RuntimeError("Login failed, please check your credentials")
 
     def _execute_request(
         self, path: str, query: dict = None, data: dict = None
